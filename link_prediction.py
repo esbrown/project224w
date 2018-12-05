@@ -172,51 +172,48 @@ def plotHubsVsViews(G):
     plt.show()
 
 def jacaard(G):
+    edges = set(G.edges)
     jaccard = nx.jaccard_coefficient(G)
-    averages = []
-    print len(removedEdges), 'total'
-    numPrinted = 0
+    confusionMatrix = [0,0,0,0] #TP, FP    FN  TN
     for u, v, p in jaccard:
-        print u,v,p
-        if (u,v) in removedEdges:
-            if numPrinted % 100 == 0:
-                print numPrinted
-            averages.append(p)
-            numPrinted += 1
-    print averages
-    print 'total average', sum(averages)/len(averages)
-    pyplot.hist(averages, bins=10, color='c')
-    pyplot.xlabel('Jacaard Coefficient of Removed Edge Pairs')
-    pyplot.ylabel('Number of Edge Pairs')
-    pyplot.show()
-
+        if (u,v) in edges:
+            if p > .5:
+                confusionMatrix[0] += 1
+            else:
+                confusionMatrix[2] += 1
+        else:
+            if p > .5:
+                confusionMatrix[1] += 1
+            else:
+                confusionMatrix[3] += 1
+    print confusionMatrix
 
 if __name__ == "__main__":
     print "Loading Graph in Network X!"
     G, views = buildGraph()
     jacaard(G)
-    # plotHubsVsViews(G)
+    plotHubsVsViews(G)
     
-    # node2rep, allNodeIDs = mapIDsToRepresentations()
-    # datasetName = {0: 'concat', 1: 'hadamard', 2: 'sum', 3: 'avg'}
-    # for seed in [1,2,3,4,5]:
-    #     random.seed(seed)
-    #     print '__________________seed', seed, '___________________'
-    #     datasets = buildDatasets(G, node2rep, allNodeIDs)
-    #     for i, dataset in enumerate(datasets):
-    #         print '____________', datasetName[i], '____________'
-    #         trainX, testX, trainY, testY = splitData(dataset)
-    #         neuralNet(trainX, testX, trainY, testY)
-    #     print ''
+    node2rep, allNodeIDs = mapIDsToRepresentations()
+    datasetName = {0: 'concat', 1: 'hadamard', 2: 'sum', 3: 'avg'}
+    for seed in [1,2,3,4,5]:
+        random.seed(seed)
+        print '__________________seed', seed, '___________________'
+        datasets = buildDatasets(G, node2rep, allNodeIDs)
+        for i, dataset in enumerate(datasets):
+            print '____________', datasetName[i], '____________'
+            trainX, testX, trainY, testY = splitData(dataset)
+            neuralNet(trainX, testX, trainY, testY)
+        print ''
 
-    # for seed in [1,2,3,4,5]:
-    #     random.seed(seed)
-    #     print '__________________seed', seed, '___________________'
-    #     datasets = buildDatasets(G, node2rep, allNodeIDs)
-    #     for i, dataset in enumerate(datasets):
-    #         print '____________', datasetName[i], '____________'
-    #         trainX, testX, trainY, testY = splitData(dataset)
-    #         logisticRegression(trainX, testX, trainY, testY)
-    #     print ''
+    for seed in [1,2,3,4,5]:
+        random.seed(seed)
+        print '__________________seed', seed, '___________________'
+        datasets = buildDatasets(G, node2rep, allNodeIDs)
+        for i, dataset in enumerate(datasets):
+            print '____________', datasetName[i], '____________'
+            trainX, testX, trainY, testY = splitData(dataset)
+            logisticRegression(trainX, testX, trainY, testY)
+        print ''
 
 
